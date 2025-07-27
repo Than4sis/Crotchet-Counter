@@ -9,6 +9,7 @@ const stitchBtn    = document.getElementById('stitchBtn');
 const rowBtn       = document.getElementById('rowBtn');
 const resetBtn     = document.getElementById('resetBtn');
 const undoBtn      = document.getElementById('undoBtn');
+const editBtn      = document.getElementById('editBtn');
 const perRowInput  = document.getElementById('stitchesPerRow');
 const autoRowCheck = document.getElementById('autoRow');
 
@@ -66,12 +67,23 @@ function reset() {
   clickSound.play();
   updateDisplays();
 }
+function editValues() {
+  const newS = parseInt(prompt("New stitch count:", stitchCount));
+  const newR = parseInt(prompt("New row count:", rowCount));
+  // push current to history
+  history.push({ s: stitchCount, r: rowCount });
+  if (!isNaN(newS)) stitchCount = newS;
+  if (!isNaN(newR)) rowCount    = newR;
+  clickSound.play();
+  updateDisplays();
+}
 
 // Attach main handlers
 stitchBtn.addEventListener('click', addStitch);
 rowBtn   .addEventListener('click', addRow);
 resetBtn .addEventListener('click', reset);
 undoBtn  .addEventListener('click', undo);
+editBtn  .addEventListener('click', editValues);
 
 // PiP Window API manager
 const PIP_WINDOW_SIZE = { width: 300, height: 240 };
