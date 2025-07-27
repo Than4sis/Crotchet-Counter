@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crochet Counter</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="auto-settings">
+    <label for="stitchesPerRow">Stitches per row:</label>
+    <input type="number" id="stitchesPerRow" value="8" min="1"/>
+    <label><input type="checkbox" id="autoRow" checked/> Auto-increase rows</label>
+  </div>
+
+  <h1>Crochet Counter</h1>
+
+  <div class="counter-box">
+    <button id="stitchBtn">0 Stitches</button>
+    <button id="rowBtn">0 Rows</button>
+  </div>
+
+  <div class="counter-actions">
+    <button id="resetBtn">Reset</button>
+    <button id="undoBtn">Undo</button>
+  </div>
+
+  <div class="theme-picker">
+    <h2>Pick a Theme:</h2>
+    <div class="theme-buttons">
+      <button class="theme-btn" data-color="#ffd1dc">Pink Yarn</button>
+      <button class="theme-btn" data-color="#e0f7fa">Aqua Yarn</button>
+      <button class="theme-btn" data-color="#f3e5f5">Lavender Yarn</button>
+      <button class="theme-btn" data-color="#fff3e0">Peach Yarn</button>
+    </div>
+  </div>
+
+  <button id="pipToggle" class="pip-toggle">🪟 Toggle Mini-Counter</button>
+
+  <div id="pipContainer">
+    <div id="pipOverlay">
+      <div id="pipStitches">Stitches: 0</div>
+      <div id="pipRows">Rows: 0</div>
+      <div id="pipTimer">⏱️ 00:00</div>
+      <div class="pip-buttons">
+        <button id="pipStitchBtn">+ Stitch</button>
+        <button id="pipRowBtn">+ Row</button>
+      </div>
+      <div class="pip-actions">
+        <button id="pipUndoBtn">Undo</button>
+      </div>
+    </div>
+    <div id="pipMessage">In Picture-in-Picture mode ▶️</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

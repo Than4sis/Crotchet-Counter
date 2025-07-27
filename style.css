@@ -1,0 +1,148 @@
+:root {
+  --btn-color: #eeafbd;
+  --text-color: #333;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+
+  /* Heart-pattern background */
+  background-color: #f3d2d9;
+  background-image:
+    radial-gradient(circle at 60% 65%, #ff69b4 8%, transparent 8%),
+    radial-gradient(circle at 40% 65%, #ff69b4 8%, transparent 8%),
+    linear-gradient(to bottom right, transparent 50%, #ff69b4 50%);
+  background-size: 50px 50px;
+  background-repeat: repeat;
+
+  color: var(--text-color);
+  text-align: center;
+  padding: 30px;
+  transition: background-color 0.3s ease;
+}
+
+/* Tighten spacing between on-page buttons */
+.counter-box {
+  display: inline-flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.counter-actions {
+  display: inline-flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* Center the PiP toggle button */
+.pip-toggle {
+  display: inline-block;
+  margin: 0 auto 30px;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  border: 2px solid #333;
+  border-radius: 8px;
+  background-color: var(--btn-color);
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.1s;
+}
+button:hover {
+  filter: brightness(95%);
+}
+
+/* Theme buttons */
+.theme-picker {
+  margin-bottom: 30px;
+}
+.theme-buttons {
+  display: inline-flex;
+  gap: 10px;
+}
+.theme-btn {
+  padding: 10px 16px;
+  border: 2px solid #333;
+  border-radius: 8px;
+  transition: transform 0.1s, filter 0.2s;
+}
+.theme-btn:hover {
+  transform: scale(1.05);
+}
+/* Real yarn colours */
+.theme-btn[data-color="#ffd1dc"] { background: #ffd1dc; }
+.theme-btn[data-color="#e0f7fa"] { background: #e0f7fa; }
+.theme-btn[data-color="#f3e5f5"] { background: #f3e5f5; }
+.theme-btn[data-color="#fff3e0"] { background: #fff3e0; }
+/* Outline active swatch */
+.theme-btn.active {
+  outline: 3px solid #555;
+}
+
+/* PiP Overlay */
+#pipOverlay {
+  display: none;             /* hidden in-page */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px !important;   /* fixed width */
+  height: 240px !important;  /* bumped height */
+  background: #fff;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 16px !important;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+  font-size: 0.9rem;
+  z-index: 1000;
+  cursor: move;
+  box-sizing: border-box;    /* include padding in size */
+  overflow: hidden;          /* no scrollbars */
+}
+
+/* Grid layout for PiP buttons */
+.pip-buttons {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  column-gap: 8px !important;
+  margin-bottom: 8px !important;
+}
+.pip-actions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+}
+.pip-buttons button,
+.pip-actions button {
+  padding: 8px !important;
+  font-size: 0.9rem !important;
+  margin: 0 !important;
+  border-radius: 6px;
+}
+
+/* PiP “in-mode” message */
+#pipMessage {
+  display: none;
+  margin-top: 8px;
+  font-style: italic;
+  color: #555;
+}
+
+/* PiP-mode overrides */
+@media (display-mode: picture-in-picture) {
+  body {
+    background: #fff !important;
+    padding: 8px !important;
+  }
+  #pipMessage {
+    display: none !important;
+  }
+  #pipOverlay {
+    display: block !important;
+    position: static !important;
+    bottom: auto; right: auto;
+    width: 100% !important;
+    height: 100% !important;
+    box-shadow: none !important;
+    cursor: default !important;
+  }
+}
