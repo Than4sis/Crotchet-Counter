@@ -1,3 +1,6 @@
+// ───────────────────────────────────────────────────
+// script.js
+// ───────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // State & Elements
   let stitchCount = 0, rowCount = 0;
