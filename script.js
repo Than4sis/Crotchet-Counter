@@ -1,14 +1,10 @@
-// ───────────────────────────────────────────────────
-// script.js
-// ───────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // State
+  // State & Elements
   let stitchCount = 0, rowCount = 0;
   const history    = [];
   const clickSound = new Audio('https://www.soundjay.com/button/beep-07.wav');
   const startTime  = Date.now();
 
-  // Main controls
   const stitchBtn    = document.getElementById('stitchBtn');
   const rowBtn       = document.getElementById('rowBtn');
   const resetBtn     = document.getElementById('resetBtn');
@@ -17,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const perRowInput  = document.getElementById('stitchesPerRow');
   const autoRowCheck = document.getElementById('autoRow');
 
-  // PiP controls
   const pipToggle    = document.getElementById('pipToggle');
   const pipContainer = document.getElementById('pipContainer');
   const pipOverlay   = document.getElementById('pipOverlay');
@@ -29,10 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const pipRowBtn    = document.getElementById('pipRowBtn');
   const pipUndoBtn   = document.getElementById('pipUndoBtn');
 
-  // Theme buttons
   const themeBtns    = document.querySelectorAll('.theme-btn');
 
-  // ─── Display updater ──────────────────────────────
+  // Display updater
   function updateDisplays() {
     stitchBtn.textContent   = `${stitchCount} Stitches`;
     rowBtn.textContent      = `${rowCount} Rows`;
@@ -40,13 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
     pipRows.textContent     = `Rows: ${rowCount}`;
   }
 
-  // ─── Counter logic ────────────────────────────────
+  // Counter logic
   function addStitch() {
     history.push({ s: stitchCount, r: rowCount });
     const perRow = parseInt(perRowInput.value) || Infinity;
     if (autoRowCheck.checked && stitchCount + 1 >= perRow) {
-      stitchCount = 0;
-      rowCount++;
+      stitchCount = 0; rowCount++;
     } else {
       stitchCount++;
     }
@@ -55,29 +48,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function addRow() {
     history.push({ s: stitchCount, r: rowCount });
-    rowCount++;
-    stitchCount = 0;
+    rowCount++; stitchCount = 0;
     clickSound.play();
     updateDisplays();
   }
   function undo() {
     if (!history.length) return;
     const { s, r } = history.pop();
-    stitchCount = s;
-    rowCount    = r;
+    stitchCount = s; rowCount = r;
     clickSound.play();
     updateDisplays();
   }
   function reset() {
     history.push({ s: stitchCount, r: rowCount });
-    stitchCount = 0;
-    rowCount    = 0;
+    stitchCount = 0; rowCount = 0;
     clickSound.play();
     updateDisplays();
   }
   function editValues() {
-    const newS = parseInt(prompt("Enter new stitch count:", stitchCount));
-    const newR = parseInt(prompt("Enter new row count:", rowCount));
+    const newS = parseInt(prompt("New stitch count:", stitchCount));
+    const newR = parseInt(prompt("New row count:", rowCount));
     history.push({ s: stitchCount, r: rowCount });
     if (!isNaN(newS)) stitchCount = newS;
     if (!isNaN(newR)) rowCount    = newR;
@@ -92,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   undoBtn  .addEventListener('click', undo);
   editBtn  .addEventListener('click', editValues);
 
-  // ─── Theme picker ─────────────────────────────────
+  // Theme picker
   function setTheme(color) {
     document.body.style.background = color;
     themeBtns.forEach(b => b.classList.toggle('active', b.dataset.color === color));
@@ -100,76 +90,58 @@ document.addEventListener('DOMContentLoaded', () => {
   themeBtns.forEach(b => b.addEventListener('click', () => setTheme(b.dataset.color)));
   if (themeBtns[0]) setTheme(themeBtns[0].dataset.color);
 
-  // ─── Timer ────────────────────────────────────────
+  // Timer
   setInterval(() => {
     const secs = Math.floor((Date.now() - startTime) / 1000);
-    const m = String(Math.floor(secs / 60)).padStart(2,'0');
-    const s = String(secs % 60).padStart(2,'0');
+    const m    = String(Math.floor(secs / 60)).padStart(2,'0');
+    const s    = String(secs % 60).padStart(2,'0');
     pipTimer.textContent = `⏱️ ${m}:${s}`;
   }, 1000);
 
-  // ─── Picture-in-Picture (optional) ───────────────
-  if ('documentPictureInPicture' in document &&
-      typeof document.documentPictureInPicture.requestWindow === 'function') {
-    // Only wire PiP if supported
-    const PIP_WINDOW_SIZE = { width: 300, height: 240 };
-    class PipManager {
-      constructor(overlay, container, toggleBtn, message, size) {
-        this.overlay   = overlay;
-        this.container = container;
-        this.toggleBtn = toggleBtn;
-        this.message   = message;
-        this.size      = size;
-        toggleBtn.addEventListener('click', this.startPiP);
-      }
-      startPiP = async () => {
-        if (document.documentPictureInPicture?.window) return;
-        const win = await window.documentPictureInPicture.requestWindow(this.size);
-        // copy styles
-        for (const sheet of document.styleSheets) {
-          try {
-            const css = [...sheet.cssRules].map(r=>r.cssText).join('');
-            const style = win.document.createElement('style');
-            style.textContent = css;
-            win.document.head.appendChild(style);
-          } catch {
-            const link = win.document.createElement('link');
-            link.rel  = 'stylesheet';
-            link.href = sheet.href;
-            win.document.head.appendChild(link);
-          }
-        }
-        // move overlay into PiP
-        win.document.body.appendChild(this.overlay);
-        this.message.style.display = '';
-        this.toggleBtn.removeEventListener('click', this.startPiP);
-        this.toggleBtn.addEventListener('click', this.stopPiP);
-      }
-      stopPiP = () => {
-        this.container.appendChild(this.overlay);
-        this.message.style.display = 'none';
-        this.toggleBtn.removeEventListener('click', this.stopPiP);
-        this.toggleBtn.addEventListener('click', this.startPiP);
-        document.documentPictureInPicture?.window.close();
-      }
+  // PiP manager
+  const PIP_WINDOW_SIZE = { width: 300, height: 240 };
+  class PipManager {
+    constructor(overlay, container, toggleBtn, message, size) {
+      this.overlay   = overlay;
+      this.container = container;
+      this.toggleBtn = toggleBtn;
+      this.message   = message;
+      this.size      = size;
+      toggleBtn.addEventListener('click', this.startPiP);
     }
-
-    new PipManager(
-      pipOverlay,
-      pipContainer,
-      pipToggle,
-      pipMessage,
-      PIP_WINDOW_SIZE
-    );
-
-    // wire PiP buttons
-    pipStitchBtn.addEventListener('click', addStitch);
-    pipRowBtn   .addEventListener('click', addRow);
-    pipUndoBtn  .addEventListener('click', undo);
-  } else {
-    // hide the toggle if PiP unsupported
-    pipToggle.style.display = 'none';
+    startPiP = async () => {
+      if (document.documentPictureInPicture?.window) return;
+      const win = await window.documentPictureInPicture.requestWindow(this.size);
+      for (const sheet of document.styleSheets) {
+        try {
+          const css = [...sheet.cssRules].map(r=>r.cssText).join('');
+          const style = win.document.createElement('style');
+          style.textContent = css;
+          win.document.head.appendChild(style);
+        } catch {
+          const link = win.document.createElement('link');
+          link.rel  = 'stylesheet';
+          link.href = sheet.href;
+          win.document.head.appendChild(link);
+        }
+      }
+      win.document.body.appendChild(this.overlay);
+      this.message.style.display = '';
+      this.toggleBtn.removeEventListener('click', this.startPiP);
+      this.toggleBtn.addEventListener('click', this.stopPiP);
+    }
+    stopPiP = () => {
+      this.container.appendChild(this.overlay);
+      this.message.style.display = 'none';
+      this.toggleBtn.removeEventListener('click', this.stopPiP);
+      this.toggleBtn.addEventListener('click', this.startPiP);
+      document.documentPictureInPicture?.window.close();
+    }
   }
+  new PipManager(pipOverlay, pipContainer, pipToggle, pipMessage, PIP_WINDOW_SIZE);
+  pipStitchBtn.addEventListener('click', addStitch);
+  pipRowBtn   .addEventListener('click', addRow);
+  pipUndoBtn  .addEventListener('click', undo);
 
   // Initial render
   updateDisplays();
